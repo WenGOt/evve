@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Загрузка видео</title>
+    <link rel="stylesheet" href="static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Загрузка видео</h1>
+        <form id="upload-form" enctype="multipart/form-data">
+            <label for="file">Выберите видео файл:</label>
+            <input type="file" id="file" name="file" accept="video/*" required>
+
+            <label for="aspect_ratio">Выберите соотношение сторон:</label>
+            <select id="aspect_ratio" name="aspect_ratio" required>
+                <option value="16:9">16:9</option>
+                <option value="4:3">4:3</option>
+                <option value="1:1">1:1</option>
+                <option value="9:16">9:16</option>
+            </select>
+
+            <label for="duration">Длительность (с): <span id="duration-value">20</span> сек.</label>
+            <input type="range" id="duration" name="duration" min="10" max="180" value="20" step="1">
+
+            <button type="submit">Загрузить</button>
+        </form>
+
+        <div id="progress-container" style="display: none;">
+            <div id="progress"></div>
+        </div>
+        <div id="timer" style="display: none;">Прошло времени: <span id="elapsed-time">0</span> сек.</div>
+
+        <div id="video-gallery">
+            <!-- Здесь будут отображаться все видео после обработки -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById('upload-form');
+            const durationInput = document.getElementById('duration');
+            const durationValue = document.getElementById('duration-value');
+            const progressContainer = document.getElementById('progress-container');
+            const progress = document.getElementById('progress');
+            const timer = document.getElementById('timer');
+            const elapsedTimeElement = document.getElementById('elapsed-time');
+            const videoGallery = document.getElementById('video-gallery');
+
+            // Обновление отображаемого значения длительности
+            durationInput.addEventListener('input', () => {
+                durationValue.textContent = durationInput.value;
+            });
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+
+                progressContainer.style.display = 'block';
+                timer.style.display = 'block';
+                let elapsedTime = 0;
+
+                // Запускаем таймер после нажатия кнопки
+                const timerInterval = setInterval(() => {
+                    elapsedTime += 1;
+                    elapsedTimeElement.textContent = elapsedTime;
+                }, 1000);
+
+                // Создаем XMLHttpRequest для отправки формы
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/upload', true);
+
+                // Обработка загрузки
+                xhr.upload.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        const percentComplete = (event.loaded / event.total) * 100;
+                        progress.style.width = `${percentComplete}%`;
+                    }
+                };
+
+                // Обработка завершения загрузки
+                xhr.onload = () => {
+                    clearInterval(timerInterval);
+                    progressContainer.style.display = 'none';
+                    timer.style.display = 'none';
+
+                    if (xhr.status === 200) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            console.log("Ответ сервера:", response);
+                            if (response.output_files) {
+                                updateVideoGallery(response.output_files);
+                            } else {
+                                console.warn("Нет выходных файлов в ответе сервера.");
+                            }
+                        } catch (error) {
+                            console.error("Ошибка при разборе ответа сервера:", error);
+                        }
+                    } else {
+                        console.error('Произошла ошибка при загрузке файла:', xhr.status, xhr.statusText);
+                        alert('Произошла ошибка при загрузке файла.');
+                    }
+                };
+
+                // Обработка ошибок
+                xhr.onerror = () => {
+                    clearInterval(timerInterval);
+                    progressContainer.style.display = 'none';
+                    timer.style.display = 'none';
+                    console.error('Ошибка сети при загрузке файла.');
+                    alert('Произошла ошибка при загрузке файла.');
+                };
+
+                // Отправка формы
+                xhr.send(formData);
+            });
+
+            // Функция для обновления галереи видео
+            function updateVideoGallery(videos) {
+                // Очищаем текущую галерею
+                videoGallery.innerHTML = '';
+
+                // Добавляем новые видео
+                videos.forEach(video => {
+                    const videoContainer = document.createElement('div');
+                    videoContainer.className = 'video-container';
+
+                    const videoElement = document.createElement('video');
+                    videoElement.controls = true;
+
+                    const sourceElement = document.createElement('source');
+                    sourceElement.src = `/static/output/${video}`;
+                    sourceElement.type = 'video/mp4';
+
+                    videoElement.appendChild(sourceElement);
+
+                    const videoTitle = document.createElement('p');
+                    videoTitle.textContent = video;
+
+                    videoContainer.appendChild(videoElement);
+                    videoContainer.appendChild(videoTitle);
+                    videoGallery.appendChild(videoContainer);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

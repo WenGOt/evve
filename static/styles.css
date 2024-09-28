@@ -1,0 +1,103 @@
+/* Общие стили для body */
+body {
+    font-family: 'Roboto', sans-serif; /* Современный шрифт */
+    background: linear-gradient(135deg, #e0eafc, #cfdef3); /* Градиентный фон */
+    margin: 0;
+    padding: 20px;
+}
+
+/* Контейнер */
+.container {
+    max-width: 600px; /* Максимальная ширина */
+    margin: auto; /* Центрирование */
+    background: white; /* Белый фон */
+    padding: 30px; /* Отступы */
+    border-radius: 15px; /* Закругленные углы */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Тень */
+    text-align: center; /* Центрирование текста */
+}
+
+/* Заголовок */
+h1 {
+    color: #333; /* Темный текст */
+    margin-bottom: 20px;
+    font-size: 2em; /* Размер заголовка */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Тень текста */
+}
+
+/* Контейнер для прогресс-бара */
+#progress-container {
+    width: 100%;
+    background: #e0e0e0; /* Серый фон для контейнера */
+    border-radius: 10px;
+    margin-top: 10px;
+    display: none; /* Скрыть по умолчанию */
+    overflow: hidden; /* Скрыть переполнение */
+}
+
+/* Стили для прогресс-бара */
+#progress {
+    width: 0;
+    height: 30px; /* Увеличенная высота */
+    background: linear-gradient(90deg, #4caf50, #8bc34a); /* Градиент */
+    border-radius: 10px;
+    transition: width 0.4s ease; /* Плавный переход */
+}
+
+/* Стили для отображения таймера */
+#timer {
+    margin-top: 15px;
+    font-size: 18px; /* Увеличенный размер шрифта */
+    color: #333; /* Темный цвет текста */
+    display: none; /* Скрыть по умолчанию */
+}
+
+/* Стили для формы */
+form {
+    background-color: #fff; /* Белый фон формы */
+    padding: 20px;
+    border-radius: 10px; /* Закругленные углы */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Тень */
+    margin-bottom: 20px; /* Отступ снизу */
+}
+
+/* Стили для меток и вводов */
+label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+    text-align: left;
+    color: #333;
+}
+
+input[type="file"],
+input[type="number"],
+select,
+input[type="range"] {
+    width: calc(100% - 20px); /* Полная ширина минус отступы */
+    padding: 10px;
+    border: 2px solid #ddd; /* Светло-серая граница */
+    border-radius: 5px; /* Закругленные углы */
+    margin-bottom: 15px; /* Отступ снизу */
+    transition: border 0.3s; /* Плавный переход для границы */
+}
+
+/* Стили для кнопки */
+button {
+    background-color: #4caf50; /* Зеленый цвет */
+    color: white;
+    padding: 12px 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+/* Эффекты для кнопки при наведении и нажатии */
+button:hover {
+    background-color: #45a049;
+}
+
+button:active {
+    transform: scale(0.98);
+}
